@@ -54,11 +54,6 @@
                 </Border>
                 <TextBlock Text="Soundstage" Margin="11,0,0,0" FontSize="15" FontWeight="SemiBold"
                            Foreground="{StaticResource SfTextBrush}" VerticalAlignment="Center" />
-                <Border Margin="10,0,0,0" Padding="8,3" CornerRadius="999" VerticalAlignment="Center"
-                        Background="{StaticResource SfAccentSoftBrush}" BorderBrush="{StaticResource SfStrokeBrush}"
-                        BorderThickness="1">
-                    <TextBlock Text="OLED" FontSize="9" FontWeight="SemiBold" Foreground="{StaticResource SfAccentBrush}" />
-                </Border>
             </StackPanel>
 
             <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
@@ -186,8 +181,6 @@
                     <TextBlock Text="{Binding TrackerText}" FontSize="12" Margin="0,2,0,14"
                                Foreground="{StaticResource SfTextSecondaryBrush}" />
                     <TextBlock Text="{Binding Version}" Style="{StaticResource Caption}" Margin="0,0,0,2" />
-                    <TextBlock Text="OLED edition" Style="{StaticResource Caption}"
-                               Foreground="{StaticResource SfTextTertiaryBrush}" />
                 </StackPanel>
             </Grid>
 

@@ -105,9 +105,6 @@
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <TextBlock Text="Soundstage" Style="{StaticResource SfH2}" />
                                 </StackPanel>
-                                <Border Style="{StaticResource SfChip}" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                    <TextBlock Text="OLED edition" FontSize="11" Foreground="{DynamicResource SfTextSecondaryBrush}" />
-                                </Border>
                             </Grid>
 
                             <TextBlock Text="{Binding Version}" Style="{StaticResource Caption}" Margin="0,0,0,8" />
