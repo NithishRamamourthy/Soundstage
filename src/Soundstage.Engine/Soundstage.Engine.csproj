@@ -11,6 +11,8 @@
   <ItemGroup>
     <!-- MIT KEMAR HRIRs (see NOTICE.md); the renderer falls back to the simple model without it. -->
     <EmbeddedResource Include="Assets\mit_kemar_diffuse.hrir" LogicalName="Soundstage.Engine.Assets.mit_kemar_diffuse.hrir" Condition="Exists('Assets\mit_kemar_diffuse.hrir')" />
+    <!-- sony-head-tracker (MIT, see NOTICE.md): embedded so the app needs no separate download. -->
+    <EmbeddedResource Include="Assets\sony-head-tracker.exe" LogicalName="Soundstage.Engine.Assets.sony-head-tracker.exe" Condition="Exists('Assets\sony-head-tracker.exe')" />
   </ItemGroup>
 
 </Project>

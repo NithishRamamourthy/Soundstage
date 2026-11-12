@@ -4,7 +4,7 @@
   <Package
       Name="Soundstage"
       Manufacturer="Soundstage"
-      Version="0.1.0.0"
+      Version="0.1.1.0"
       UpgradeCode="7f2c8a51-3b64-4d0e-9c1a-5e8d2b7f4a10"
       Scope="perUser"
       Compressed="yes"
@@ -50,6 +50,11 @@
       <Component Id="MainExecutable" Guid="*">
         <File Id="SoundstageExe" Source="dist\app\Soundstage.exe" KeyPath="yes" />
       </Component>
+      <!-- Bundled head tracker (MIT): the app also carries a copy, this one keeps it visible on disk. -->
+      <Component Id="HeadTracker" Guid="*">
+        <File Id="HeadTrackerExe" Source="src\Soundstage.Engine\Assets\sony-head-tracker.exe" />
+        <File Id="HeadTrackerLicense" Source="src\Soundstage.Engine\Assets\sony-head-tracker.LICENSE.txt" Name="sony-head-tracker.LICENSE.txt" />
+      </Component>
     </ComponentGroup>
 
     <Component Id="StartMenuShortcut" Directory="AppMenuFolder" Guid="*">
@@ -77,7 +82,7 @@
       <RegistryValue Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\Soundstage"
                      Name="DisplayName" Type="string" Value="Soundstage" KeyPath="yes" />
       <RegistryValue Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\Soundstage"
-                     Name="DisplayVersion" Type="string" Value="0.1.0" />
+                     Name="DisplayVersion" Type="string" Value="0.1.1" />
       <RegistryValue Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\Soundstage"
                      Name="Publisher" Type="string" Value="Soundstage" />
       <RegistryValue Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\Soundstage"

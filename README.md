@@ -16,7 +16,10 @@ speakers fixed in the room as you turn your head.
 
 **[Download `Soundstage-Setup.msi`](https://github.com/NithishRamamourthy/Soundstage/releases/latest)** and double-click it.
 
-- No .NET runtime needed; the app is self-contained.
+Everything is inside the installer, including the .NET runtime and the head
+tracker. Nothing is downloaded during setup and nothing else has to be installed
+first, on a fresh Windows 11 machine or on one with no developer tools at all.
+
 - Installs per user into `%LocalAppData%\Programs\Soundstage`, so it needs no
   administrator rights and nothing is installed machine-wide.
 - Adds a Start Menu shortcut. To also get a desktop shortcut, run
@@ -25,7 +28,8 @@ speakers fixed in the room as you turn your head.
 - Uninstall from **Settings → Apps → Installed apps → Soundstage**.
 
 There is also a portable `Soundstage.exe` in the same release: no installer,
-just run it from any folder.
+just run it from any folder. It carries the head tracker inside itself and
+unpacks it to `%LocalAppData%\Soundstage\tools` on first use.
 
 Requirements: Windows 11 x64, a Bluetooth-connected supported Sony headphone,
 and a virtual playback device for apps to play into (see below).
@@ -84,11 +88,11 @@ and shows one administrator prompt.
   *Steam Streaming Speakers* (installed with Steam) or VB-CABLE. Soundstage
   captures that device with WASAPI loopback and plays the rendered result to
   your headphones.
-- **[sony-head-tracker](https://github.com/NicholasSlattery/sony-head-tracker)**
-  (MIT) to read the headphone's motion sensor. Download its Windows release and
-  put `sony-head-tracker.exe` next to `Soundstage.exe`, or anywhere under a
-  `third_party` folder in this repository. Without it the app still runs and
-  controls the headphones, but there is no head tracking.
+- **Nothing else.** The .NET runtime and
+  [sony-head-tracker](https://github.com/NicholasSlattery/sony-head-tracker)
+  (MIT, v2.2.0), which reads the headphone's motion sensor, are both bundled.
+  If you want to use your own build of the tracker instead, drop
+  `sony-head-tracker.exe` next to `Soundstage.exe` and that copy is used first.
 
 ## How it works
 
@@ -148,7 +152,8 @@ See [NOTICE.md](NOTICE.md) for full attributions.
   Dummy-Head Microphone", MIT Media Lab, 1994. Used with citation, as its terms
   require.
 - Head-tracker sensor access: [sony-head-tracker](https://github.com/NicholasSlattery/sony-head-tracker)
-  by Nicholas Slattery, MIT License. Not bundled; downloaded separately.
+  by Nicholas Slattery, MIT License. Version 2.2.0 is bundled, unmodified, and
+  its license text ships with it.
 - Control protocol documentation: [SonyHeadphonesClient](https://github.com/mos9527/SonyHeadphonesClient)
   and [sony-device-center](https://github.com/marconvcm/sony-device-center)
   (MIT). No code from either is included.

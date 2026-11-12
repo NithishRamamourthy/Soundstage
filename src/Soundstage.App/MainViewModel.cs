@@ -543,7 +543,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
             _ui.BeginInvoke(() =>
             {
                 IsFixing = false;
-                if (code == -1) ErrorText = "sony-head-tracker.exe was not found next to Soundstage.";
+                if (code == -1) ErrorText = "The bundled head tracker could not be started. Try reinstalling Soundstage.";
                 else if (code != 0) ErrorText = "The tracker repair did not finish. Check that the headphones are connected.";
                 RestartIfRunning();
             });

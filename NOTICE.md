@@ -20,7 +20,19 @@ of 368 WAV files). `soundstage-cli --pack-hrtf diffuse.zip <out>` regenerates it
 
 Soundstage runs [sony-head-tracker](https://github.com/NicholasSlattery/sony-head-tracker)
 by Nicholas Slattery (MIT License) as a separate program to read the headphone's
-motion sensor. It is not included in this repository.
+motion sensor.
+
+Version 2.2.0 (`sony-head-tracker-v2.2.0-windows-x64.zip`) is redistributed here
+unmodified, under its MIT License, in two places:
+
+- `src/Soundstage.Engine/Assets/sony-head-tracker.exe`, embedded in the app so the
+  single-file build carries it, and unpacked to `%LocalAppData%\Soundstage\tools`
+  on first use;
+- `sony-head-tracker.exe` next to `Soundstage.exe` in the installer.
+
+Its license text ships alongside it as `sony-head-tracker.LICENSE.txt`. The
+upstream project is the place to report tracker bugs, and a newer or custom
+build dropped next to `Soundstage.exe` takes priority over the bundled copy.
 
 ## Sony headphone control protocol
 

@@ -143,7 +143,8 @@ namespace Soundstage.Engine
             return !string.IsNullOrEmpty(id) && Wasapi.SetDefaultRender(id);
         }
 
-        /// <summary>Locates sony-head-tracker.exe: an explicit path, next to the app, or in third_party.</summary>
+        /// <summary>Locates sony-head-tracker.exe: an explicit path, next to the app, in
+        /// third_party, or the copy bundled in this build.</summary>
         public static string FindTracker(string hint)
         {
             if (!string.IsNullOrEmpty(hint) && File.Exists(hint)) return Path.GetFullPath(hint);
@@ -160,7 +161,7 @@ namespace Soundstage.Engine
                 }
                 dir = Path.GetDirectoryName(dir.TrimEnd(Path.DirectorySeparatorChar));
             }
-            return null;
+            return TrackerBundle.Ensure();
         }
 
         /// <summary>Runs the tracker's own repair step (Windows shows one admin prompt).</summary>
