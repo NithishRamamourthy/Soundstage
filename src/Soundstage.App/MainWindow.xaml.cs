@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 
@@ -28,6 +29,12 @@ public partial class MainWindow : Window
         InitializeComponent();
         DataContext = _viewModel;
         SourceInitialized += (_, _) => Chrome.Apply(this);
+
+        Loaded += (_, _) =>
+        {
+            if (UpdateChecker.UpdateAvailable) ShowUpdateLink();
+            UpdateChecker.Changed += () => Dispatcher.Invoke(ShowUpdateLink);
+        };
 
         _tray = new TrayIcon(_viewModel);
         _tray.OpenRequested += ShowFromTray;
@@ -97,5 +104,19 @@ public partial class MainWindow : Window
         MaximizeGlyph.Data = Geometry.Parse(WindowState == WindowState.Maximized
             ? "M2,4 H8 V10 H2 Z M4,2 H10 V8 H4 Z"
             : "M2,2 H10 V10 H2 Z");
+    }
+
+    void ShowUpdateLink()
+    {
+        if (UpdateLink == null || !UpdateChecker.UpdateAvailable) return;
+        UpdateLink.Text = "Update available: v" + UpdateChecker.LatestVersion;
+        UpdateLink.Visibility = Visibility.Visible;
+    }
+
+    void UpdateLink_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (string.IsNullOrEmpty(UpdateChecker.ReleaseUrl)) return;
+        try { Process.Start(new ProcessStartInfo(UpdateChecker.ReleaseUrl) { UseShellExecute = true }); }
+        catch { }
     }
 }

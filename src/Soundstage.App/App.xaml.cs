@@ -13,6 +13,9 @@ public partial class App : Application
         base.OnStartup(e);
         var window = new MainWindow();
 
+        // Check for a newer release in the background; the window shows a link if one exists.
+        UpdateChecker.Check();
+
         // Developer aid: "--snapshot file.png" renders the window to an image and exits.
         int i = Array.IndexOf(e.Args, "--snapshot");
         // "--tall" grows the window so a long page fits in one snapshot.

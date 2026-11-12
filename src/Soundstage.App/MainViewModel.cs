@@ -61,7 +61,7 @@ public sealed class AppSettings
         try
         {
             Directory.CreateDirectory(Path.GetDirectoryName(FilePath)!);
-            File.WriteAllText(FilePath, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
+            AtomicFile.WriteAllText(FilePath, JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true }));
         }
         catch (Exception) { }
     }
@@ -269,6 +269,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         Notify(nameof(SourceHint));
         Notify(nameof(SourceLayoutText));
         Notify(nameof(CanSetUpSurround));
+        Notify(nameof(NoVirtualDevice));
         if (!_engine.IsRunning) Layout = IdleLayout();
     }
 
@@ -291,6 +292,15 @@ public sealed class MainViewModel : INotifyPropertyChanged
     }
 
     public bool CanSetUpSurround => SelectedSource is { } s && s.MaxChannels > s.Channels;
+
+    /// <summary>True when no virtual audio device is selected.</summary>
+    public bool NoVirtualDevice =>
+        _selectedSource == null ||
+        !(_selectedSource.Name.Contains("Steam Streaming Speakers", StringComparison.OrdinalIgnoreCase) ||
+          _selectedSource.Name.Contains("CABLE", StringComparison.OrdinalIgnoreCase) ||
+          _selectedSource.Name.Contains("Voicemeeter", StringComparison.OrdinalIgnoreCase) ||
+          _selectedSource.Name.Contains("Virtual", StringComparison.OrdinalIgnoreCase) ||
+          _selectedSource.Name.Contains("VB-Audio", StringComparison.OrdinalIgnoreCase));
 
     public string SourceHint => SelectedSource == null
         ? "Pick a virtual audio device to capture. Apps play to it and Soundstage sends the spatial mix to your headphones."
@@ -335,8 +345,14 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
     // ----------------------------------------------------------------- engine
 
+    bool _directCompare;
+    /// <summary>Bypasses spatial processing so the capture is heard as-is.</summary>
+    public bool DirectCompare
+    {
+        get => _directCompare;
+        set { if (!Set(ref _directCompare, value)) return; _engine.Bypass = value; }
+    }
     bool _isOn;
-    /// <summary>The master switch.</summary>
     public bool IsOn
     {
         get => _isOn;

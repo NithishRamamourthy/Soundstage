@@ -12,7 +12,7 @@
     <AssemblyName>Soundstage</AssemblyName>
     <RootNamespace>Soundstage.UI</RootNamespace>
     <ApplicationIcon>soundstage.ico</ApplicationIcon>
-    <Version>0.1.3</Version>
+    <Version>0.1.4</Version>
     <!-- WPF0001: the Fluent ThemeMode API is still marked experimental. -->
     <NoWarn>$(NoWarn);WPF0001</NoWarn>
   </PropertyGroup>

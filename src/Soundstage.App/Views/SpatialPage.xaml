@@ -122,6 +122,20 @@
                                       HorizontalAlignment="Stretch"
                                       AutomationProperties.Name="Capture audio from" />
 
+                            <Border Style="{StaticResource SfCard}" Margin="0,10,0,0" Padding="12,10"
+                                    Visibility="{Binding NoVirtualDevice, Converter={StaticResource BoolToVisibility}}"
+                                    Background="{DynamicResource SystemFillColorCautionBackgroundBrush}"
+                                    BorderBrush="#5C4A12" BorderThickness="1">
+                                <StackPanel>
+                                    <TextBlock Text="No virtual audio device found" Style="{StaticResource RowLabel}" />
+                                    <TextBlock Text="Apps need somewhere to play into that Soundstage can capture. Install Steam (it adds Steam Streaming Speakers) or VB-CABLE (free), then refresh."
+                                               Style="{StaticResource Caption}" Margin="0,4,0,0" TextWrapping="Wrap" />
+                                    <Button Content="Refresh devices" Command="{Binding RefreshCommand}"
+                                            Style="{StaticResource SfSecondaryButton}" HorizontalAlignment="Left"
+                                            Margin="0,8,0,0" />
+                                </StackPanel>
+                            </Border>
+
                             <TextBlock Text="{Binding SourceLayoutText}" Style="{StaticResource Caption}" Margin="0,10,0,0" />
 
                             <StackPanel Visibility="{Binding CanSetUpSurround, Converter={StaticResource BoolToVisibility}}">

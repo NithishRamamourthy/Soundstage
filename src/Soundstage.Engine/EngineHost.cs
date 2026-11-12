@@ -48,6 +48,7 @@ namespace Soundstage.Engine
         public string TrackerPath;
         public int Port = 4242;
         public bool UseTracker = true;
+        public bool Bypass;
         /// <summary>Ignore the source device and play test noise from DemoAzimuth.</summary>
         public bool Demo;
         public double DemoAzimuth;
@@ -95,6 +96,8 @@ namespace Soundstage.Engine
         public SpeakerLayout Layout { get; private set; }
         /// <summary>Renderer settings that apply immediately, even while running.</summary>
         public RenderSettings Render { get; private set; }
+        /// <summary>When true the capture is passed straight to the headphones unprocessed.</summary>
+        public volatile bool Bypass;
         public bool IsRunning { get { return _running; } }
 
         /// <summary>Informational messages (device names, tracker state).</summary>
@@ -484,7 +487,15 @@ namespace Soundstage.Engine
 
                         TrackPeak(inBuf, n * ch, ref _inPeak);
                         TrackChannelPeaks(inBuf, n, ch);
-                        dsp.Process(inBuf, n, outBuf);
+                        if (Bypass)
+                        {
+                            for (int i = 0; i < n; i++)
+                            {
+                                outBuf[i * 2] = inBuf[i * ch];
+                                outBuf[i * 2 + 1] = (ch > 1) ? inBuf[i * ch + 1] : inBuf[i * ch];
+                            }
+                        }
+                        else dsp.Process(inBuf, n, outBuf);
                         TrackPeak(outBuf, n * 2, ref _outPeak);
                         ring.Write(outBuf, n);
 
@@ -724,17 +735,28 @@ namespace Soundstage.Engine
                     float l = 0, r = 0;
                     if (!_priming)
                     {
-                        if (_count < 4)
+                        if (_count < 16)
                         {
                             _priming = true;
                             Underruns++;
                         }
                         else
                         {
-                            int i0 = _read, i1 = (_read + 1) % _cap, i2 = (_read + 2) % _cap, i3 = (_read + 3) % _cap;
-                            float t = (float)_phase;
-                            l = Hermite(_buf[i0 * 2], _buf[i1 * 2], _buf[i2 * 2], _buf[i3 * 2], t);
-                            r = Hermite(_buf[i0 * 2 + 1], _buf[i1 * 2 + 1], _buf[i2 * 2 + 1], _buf[i3 * 2 + 1], t);
+                            int baseIndex = (int)Math.Floor(_phase);
+                            double t = _phase - baseIndex;
+                            double lAcc = 0, rAcc = 0;
+                            for (int k = -7; k <= 8; k++)
+                            {
+                                int idx = (_read + baseIndex + k) % _cap;
+                                if (idx < 0) idx += _cap;
+                                double d = t - k;
+                                double sinc = (Math.Abs(d) < 1e-9) ? 1.0 : Math.Sin(Math.PI * d) / (Math.PI * d);
+                                double w = 0.5 + 0.5 * Math.Cos(Math.PI * d / 8.0);
+                                lAcc += _buf[idx * 2] * sinc * w;
+                                rAcc += _buf[idx * 2 + 1] * sinc * w;
+                            }
+                            l = (float)lAcc;
+                            r = (float)rAcc;
                             _phase += ratio;
                             while (_phase >= 1.0 && _count > 0)
                             {
@@ -752,14 +774,6 @@ namespace Soundstage.Engine
             }
         }
 
-        // 4-point Catmull-Rom interpolation between p1 and p2.
-        static float Hermite(float p0, float p1, float p2, float p3, float t)
-        {
-            float a = -0.5f * p0 + 1.5f * p1 - 1.5f * p2 + 0.5f * p3;
-            float b = p0 - 2.5f * p1 + 2f * p2 - 0.5f * p3;
-            float c = -0.5f * p0 + 0.5f * p2;
-            return ((a * t + b) * t + c) * t + p1;
-        }
     }
 
     /// <summary>Offline checks of the renderer's direction cues; no audio devices needed.</summary>
