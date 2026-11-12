@@ -1,0 +1,18 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+
+# Build output and packaged releases are produced, not committed.
+dist/
+publish/
+*.msi
+
+# Third-party binaries are downloaded, not committed (see README).
+third_party/
+
+# Scratch
+*.log
+snap-*.png
+shot-*.png

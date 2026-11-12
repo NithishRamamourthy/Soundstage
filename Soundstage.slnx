@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Soundstage.App/Soundstage.App.csproj" />
+    <Project Path="src/Soundstage.Cli/Soundstage.Cli.csproj" />
+    <Project Path="src/Soundstage.Engine/Soundstage.Engine.csproj" />
+  </Folder>
+</Solution>

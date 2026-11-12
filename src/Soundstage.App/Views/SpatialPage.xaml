@@ -1,0 +1,289 @@
+<UserControl x:Class="Soundstage.UI.Views.SpatialPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:Soundstage.UI">
+    <ScrollViewer Background="Transparent"
+                  VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+        <Grid Margin="0,0,10,28">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,22">
+                <TextBlock Text="SPATIAL AUDIO" Style="{StaticResource SfEyebrow}" />
+                <TextBlock Text="Sound that stays put" Style="{StaticResource SfH1}" Margin="0,7,0,0" />
+                <TextBlock Text="Virtual speakers stay fixed in the room while your head turns."
+                           Style="{StaticResource Caption}" Margin="0,8,0,0" />
+            </StackPanel>
+
+            <!-- Two columns: the room on the left, the settings on the right -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.15*" />
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Left: the room and where the head is in it -->
+                <Border Grid.Column="0" Style="{StaticResource SfCard}" VerticalAlignment="Top">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Head position" Style="{StaticResource CardTitle}" />
+
+                        <ui:HeadView Grid.Row="1" MinHeight="380" Margin="0,12,0,16"
+                                     Yaw="{Binding Yaw}" Layout="{Binding Layout}"
+                                     Active="{Binding HeadActive}" Levels="{Binding Levels}"
+                                     Stroke="{DynamicResource SfTextSecondaryBrush}"
+                                     Subtle="{DynamicResource SfStrokeBrush}"
+                                     Accent="{DynamicResource SfAccentBrush}"
+                                     HeadFill="{DynamicResource SfBgBrush}" />
+
+                        <UniformGrid Grid.Row="2" Columns="3" Margin="0,0,0,18">
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding YawText}" FontSize="26" FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource SfTextBrush}" />
+                                <TextBlock Text="Turn" Style="{StaticResource Caption}" HorizontalAlignment="Center" />
+                            </StackPanel>
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding PitchText}" FontSize="26" FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource SfTextBrush}" />
+                                <TextBlock Text="Nod" Style="{StaticResource Caption}" HorizontalAlignment="Center" />
+                            </StackPanel>
+                            <StackPanel HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding RollText}" FontSize="26" FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"
+                                           Foreground="{DynamicResource SfTextBrush}" />
+                                <TextBlock Text="Tilt" Style="{StaticResource Caption}" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </UniformGrid>
+
+                        <Grid Grid.Row="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="10" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button Content="Recentre" Command="{Binding RecenterCommand}"
+                                    Style="{StaticResource SfPrimaryButton}" HorizontalAlignment="Stretch" />
+                            <Button Grid.Column="2" Content="{Binding TestSoundLabel}" Command="{Binding TestSoundCommand}"
+                                    Style="{StaticResource SfSecondaryButton}" HorizontalAlignment="Stretch" />
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- Right: devices, sound, head tracking and the signal meters -->
+                <StackPanel Grid.Column="2">
+
+                    <!-- Devices -->
+                    <Border Style="{StaticResource SfCard}">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,14">
+                                <TextBlock Text="Devices" Style="{StaticResource CardTitle}" VerticalAlignment="Center" />
+                                <Button Content="Refresh" Command="{Binding RefreshCommand}"
+                                        Style="{StaticResource SfGhostButton}" HorizontalAlignment="Right" />
+                            </Grid>
+
+                            <TextBlock Text="Headphones" Style="{StaticResource Caption}" Margin="0,0,0,5" />
+                            <Grid>
+                                <ComboBox ItemsSource="{Binding Devices}" SelectedItem="{Binding SelectedOutput}"
+                                          DisplayMemberPath="Name" Style="{StaticResource SfComboBox}"
+                                          HorizontalAlignment="Stretch"
+                                          AutomationProperties.Name="Headphones" />
+                                <TextBlock Text="No headphones found" Margin="13,0,0,0" IsHitTestVisible="False"
+                                           VerticalAlignment="Center">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource Caption}">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Setter Property="Foreground" Value="{DynamicResource SfTextTertiaryBrush}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedOutput}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Grid>
+
+                            <TextBlock Text="Capture audio from" Style="{StaticResource Caption}" Margin="0,14,0,5" />
+                            <ComboBox ItemsSource="{Binding Devices}" SelectedItem="{Binding SelectedSource}"
+                                      DisplayMemberPath="Name" Style="{StaticResource SfComboBox}"
+                                      HorizontalAlignment="Stretch"
+                                      AutomationProperties.Name="Capture audio from" />
+
+                            <TextBlock Text="{Binding SourceLayoutText}" Style="{StaticResource Caption}" Margin="0,10,0,0" />
+
+                            <StackPanel Visibility="{Binding CanSetUpSurround, Converter={StaticResource BoolToVisibility}}">
+                                <Button Content="Set up surround" Command="{Binding SurroundSetupCommand}"
+                                        Style="{StaticResource SfSecondaryButton}"
+                                        HorizontalAlignment="Left" Margin="0,10,0,0" />
+                                <TextBlock Style="{StaticResource Caption}" Margin="0,8,0,0"
+                                           Text="Opens the Windows Sound panel. Select this device, press Configure, pick 7.1 Surround and finish the wizard. Soundstage picks up the change when you come back." />
+                            </StackPanel>
+
+                            <TextBlock Text="{Binding SourceHint}" Style="{StaticResource Caption}" Margin="0,14,0,10" />
+                            <Button Content="Open sound settings" Command="{Binding SoundSettingsCommand}"
+                                    Style="{StaticResource SfSecondaryButton}" HorizontalAlignment="Left" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Sound -->
+                    <Border Style="{StaticResource SfCard}">
+                        <StackPanel>
+                            <TextBlock Text="Sound" Style="{StaticResource CardTitle}" Margin="0,0,0,14" />
+
+                            <Grid Margin="0,0,0,16">
+                                <StackPanel Margin="0,0,60,0">
+                                    <TextBlock Text="Measured ear responses" Style="{StaticResource RowLabel}" />
+                                    <TextBlock Text="Uses recordings from a dummy head, so front, back and height sound different. Turn off to compare with the simple model."
+                                               Style="{StaticResource Caption}" Margin="0,4,0,0" />
+                                </StackPanel>
+                                <ToggleButton Style="{StaticResource Switch}" IsChecked="{Binding MeasuredModel}"
+                                              HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,0,0"
+                                              AutomationProperties.Name="Measured ear responses" />
+                            </Grid>
+
+                            <StackPanel IsEnabled="{Binding RoomAvailable}">
+                                <Grid>
+                                    <TextBlock Text="Room" Style="{StaticResource RowLabel}" />
+                                    <TextBlock Text="{Binding RoomText}" Style="{StaticResource Caption}"
+                                               HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                </Grid>
+                                <Slider Minimum="0" Maximum="100" SmallChange="5" LargeChange="10" Margin="0,4,0,0"
+                                        Style="{StaticResource SfSlider}"
+                                        Value="{Binding RoomPercent}" AutomationProperties.Name="Room" />
+                                <TextBlock Text="Adds wall reflections so sound seems to come from speakers in a room, not from inside your head. Higher is more spacious but less crisp."
+                                           Style="{StaticResource Caption}" Margin="0,4,0,0" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Head tracking -->
+                    <Border Style="{StaticResource SfCard}">
+                        <StackPanel>
+                            <TextBlock Text="Head tracking" Style="{StaticResource CardTitle}" Margin="0,0,0,14" />
+
+                            <Border CornerRadius="10" Padding="12,10" Margin="0,0,0,14"
+                                    Background="{DynamicResource SystemFillColorCautionBackgroundBrush}"
+                                    BorderBrush="#5C4A12" BorderThickness="1"
+                                    Visibility="{Binding TrackerMissing, Converter={StaticResource BoolToVisibility}}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock TextWrapping="Wrap" FontSize="12" VerticalAlignment="Center" Margin="0,0,14,0"
+                                               Foreground="{DynamicResource SfTextBrush}"
+                                               Text="No motion data from the headphones. Windows may need to re-activate the sensor (one admin prompt)." />
+                                    <Button Grid.Column="1" Content="Fix tracker" Command="{Binding FixTrackerCommand}"
+                                            Style="{StaticResource SfSecondaryButton}"
+                                            VerticalAlignment="Center" />
+                                </Grid>
+                            </Border>
+
+                            <Grid Margin="0,0,0,14">
+                                <StackPanel Margin="0,0,60,0">
+                                    <TextBlock Text="Follow my head" Style="{StaticResource RowLabel}" />
+                                    <TextBlock Text="Sound stays in place when you turn." Style="{StaticResource Caption}" Margin="0,4,0,0" />
+                                </StackPanel>
+                                <ToggleButton Style="{StaticResource Switch}" IsChecked="{Binding Tracking}"
+                                              HorizontalAlignment="Right" VerticalAlignment="Center"
+                                              AutomationProperties.Name="Follow my head" />
+                            </Grid>
+
+                            <Grid Margin="0,0,0,14">
+                                <StackPanel Margin="0,0,60,0">
+                                    <TextBlock Text="Auto-recentre" Style="{StaticResource RowLabel}" />
+                                    <TextBlock Text="Front slowly follows where you are facing." Style="{StaticResource Caption}" Margin="0,4,0,0" />
+                                </StackPanel>
+                                <ToggleButton Style="{StaticResource Switch}" IsChecked="{Binding AutoCenter}"
+                                              HorizontalAlignment="Right" VerticalAlignment="Center"
+                                              AutomationProperties.Name="Auto-recentre" />
+                            </Grid>
+
+                            <Grid>
+                                <TextBlock Text="Motion prediction" Style="{StaticResource RowLabel}" />
+                                <TextBlock Text="{Binding PredictionText}" Style="{StaticResource Caption}"
+                                           HorizontalAlignment="Right" VerticalAlignment="Center" />
+                            </Grid>
+                            <Slider Minimum="0" Maximum="250" SmallChange="10" LargeChange="20" Margin="0,4,0,0"
+                                    Style="{StaticResource SfSlider}"
+                                    Value="{Binding PredictionMs}" AutomationProperties.Name="Motion prediction" />
+                            <TextBlock Text="Compensates for Bluetooth delay. Raise it if sound lags behind your head; lower it if it overshoots."
+                                       Style="{StaticResource Caption}" Margin="0,4,0,0" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Signal -->
+                    <Border Style="{StaticResource SfCard}">
+                        <StackPanel>
+                            <TextBlock Text="Signal" Style="{StaticResource CardTitle}" Margin="0,0,0,14" />
+
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="64" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Input" Style="{StaticResource Caption}" VerticalAlignment="Center" />
+                                <ProgressBar Grid.Column="1" Style="{StaticResource SfProgress}"
+                                             Minimum="0" Maximum="1" Value="{Binding InputLevel, Mode=OneWay}" />
+                            </Grid>
+
+                            <Grid Margin="0,0,0,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="64" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Output" Style="{StaticResource Caption}" VerticalAlignment="Center" />
+                                <ProgressBar Grid.Column="1" Style="{StaticResource SfProgress}"
+                                             Minimum="0" Maximum="1" Value="{Binding OutputLevel, Mode=OneWay}" />
+                            </Grid>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="8" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="8" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="0" Style="{StaticResource SfChip}" Padding="12,8">
+                                    <StackPanel>
+                                        <TextBlock Text="Tracker" Style="{StaticResource Caption}" />
+                                        <TextBlock Text="{Binding TrackerText}" FontSize="13" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource SfTextBrush}" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="2" Style="{StaticResource SfChip}" Padding="12,8">
+                                    <StackPanel>
+                                        <TextBlock Text="Buffer" Style="{StaticResource Caption}" />
+                                        <TextBlock Text="{Binding BufferText}" FontSize="13" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource SfTextBrush}" />
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="4" Style="{StaticResource SfChip}" Padding="12,8">
+                                    <StackPanel>
+                                        <TextBlock Text="Dropouts" Style="{StaticResource Caption}" />
+                                        <TextBlock Text="{Binding DropoutText}" FontSize="13" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource SfTextBrush}" />
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

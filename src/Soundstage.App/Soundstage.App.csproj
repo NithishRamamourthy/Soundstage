@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseWPF>true</UseWPF>
+    <!-- Windows Forms is used only for the notification-area (tray) icon. -->
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>Soundstage</AssemblyName>
+    <RootNamespace>Soundstage.UI</RootNamespace>
+    <ApplicationIcon>soundstage.ico</ApplicationIcon>
+    <Version>0.1.0</Version>
+    <!-- WPF0001: the Fluent ThemeMode API is still marked experimental. -->
+    <NoWarn>$(NoWarn);WPF0001</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Keep WPF names (Application, Button, ...) unambiguous. -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+    <Resource Include="soundstage.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Soundstage.Engine\Soundstage.Engine.csproj" />
+  </ItemGroup>
+
+</Project>

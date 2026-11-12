@@ -1,0 +1,165 @@
+<UserControl x:Class="Soundstage.UI.Views.SettingsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Background="Transparent">
+        <Grid Margin="0,0,10,28">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,16">
+                <TextBlock Text="SETTINGS" Style="{StaticResource SfEyebrow}" />
+                <TextBlock Text="Make it yours" Style="{StaticResource SfH1}" Margin="0,4,0,0" />
+                <TextBlock Text="Windows integration, audio routing and about." Style="{StaticResource Caption}" Margin="0,6,0,0" />
+            </StackPanel>
+
+            <!-- Two columns -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="20" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Left column -->
+                <StackPanel Grid.Column="0">
+                    <!-- Windows integration -->
+                    <Border Style="{StaticResource SfCard}">
+                        <StackPanel>
+                            <TextBlock Text="Windows integration" Style="{StaticResource CardTitle}" Margin="0,0,0,12" />
+
+                            <Grid Margin="0,0,0,12">
+                                <StackPanel Margin="0,0,56,0">
+                                    <TextBlock Text="Start with Windows" Style="{StaticResource RowLabel}" />
+                                    <TextBlock Text="Launch Soundstage when you sign in." Style="{StaticResource Caption}" />
+                                </StackPanel>
+                                <ToggleButton Style="{StaticResource Switch}" IsChecked="{Binding StartWithWindows}"
+                                              HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,0,0"
+                                              AutomationProperties.Name="Start with Windows" />
+                            </Grid>
+
+                            <Grid Margin="0,0,0,12">
+                                <StackPanel Margin="0,0,56,0">
+                                    <TextBlock Text="Keep running in the tray" Style="{StaticResource RowLabel}" />
+                                    <TextBlock Text="Closing the window keeps spatial audio running." Style="{StaticResource Caption}" />
+                                </StackPanel>
+                                <ToggleButton Style="{StaticResource Switch}" IsChecked="{Binding CloseToTray}"
+                                              HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,0,0"
+                                              AutomationProperties.Name="Keep running in the tray" />
+                            </Grid>
+
+                            <Grid Margin="0,0,0,8">
+                                <StackPanel Margin="0,0,56,0">
+                                    <TextBlock Text="Global shortcuts" Style="{StaticResource RowLabel}" />
+                                    <TextBlock Text="Ctrl+Alt+S toggles spatial audio, Ctrl+Alt+R recentres, Ctrl+Alt+N switches noise mode." Style="{StaticResource Caption}" />
+                                </StackPanel>
+                                <ToggleButton Style="{StaticResource Switch}" IsChecked="{Binding HotkeysEnabled}"
+                                              HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,0,0"
+                                              AutomationProperties.Name="Global shortcuts" />
+                            </Grid>
+
+                            <Border CornerRadius="10" Padding="12,10" Margin="0,4,0,0"
+                                    Background="{DynamicResource SystemFillColorCautionBackgroundBrush}"
+                                    BorderBrush="#5C4A12" BorderThickness="1"
+                                    Visibility="{Binding HotkeyConflict, Converter={StaticResource BoolToVisibility}}">
+                                <TextBlock TextWrapping="Wrap" FontSize="12"
+                                           Foreground="{DynamicResource SfWarningBrush}"
+                                           Text="Another app already owns one of these shortcuts." />
+                            </Border>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Audio routing -->
+                    <Border Style="{StaticResource SfCard}">
+                        <StackPanel>
+                            <TextBlock Text="Audio routing" Style="{StaticResource CardTitle}" Margin="0,0,0,12" />
+
+                            <Grid Margin="0,0,0,12">
+                                <StackPanel Margin="0,0,56,0">
+                                    <TextBlock Text="Auto-switch output" Style="{StaticResource RowLabel}" />
+                                    <TextBlock Text="Soundstage points Windows at the capture device while on, and switches back after." Style="{StaticResource Caption}" />
+                                </StackPanel>
+                                <ToggleButton Style="{StaticResource Switch}" IsChecked="{Binding AutoSwitchOutput}"
+                                              HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,0,0"
+                                              AutomationProperties.Name="Auto-switch output" />
+                            </Grid>
+
+                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                <Button Content="Open sound settings" Command="{Binding SoundSettingsCommand}"
+                                        Style="{StaticResource SfSecondaryButton}" Margin="0,0,8,0" />
+                                <Button Content="Set up surround" Command="{Binding SurroundSetupCommand}"
+                                        Style="{StaticResource SfSecondaryButton}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- Right column -->
+                <StackPanel Grid.Column="2">
+                    <!-- About -->
+                    <Border Style="{StaticResource SfCard}">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,8">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="Soundstage" Style="{StaticResource SfH2}" />
+                                </StackPanel>
+                                <Border Style="{StaticResource SfChip}" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <TextBlock Text="OLED edition" FontSize="11" Foreground="{DynamicResource SfTextSecondaryBrush}" />
+                                </Border>
+                            </Grid>
+
+                            <TextBlock Text="{Binding Version}" Style="{StaticResource Caption}" Margin="0,0,0,8" />
+
+                            <TextBlock Text="Head-tracked spatial audio for Windows, with Sony headphone control."
+                                       Style="{StaticResource Caption}" Margin="0,0,0,12" />
+
+                            <Border Style="{StaticResource SfDivider}" Margin="0,0,0,12" />
+
+                            <TextBlock Text="MIT KEMAR HRTF data (Gardner &amp; Martin, 1994), sony-head-tracker by Nicholas Slattery (MIT), Sony headphone protocol documented by SonyHeadphonesClient / sony-device-center."
+                                       Style="{StaticResource Caption}" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Tips -->
+                    <Border Style="{StaticResource SfCard}">
+                        <StackPanel>
+                            <TextBlock Text="Tips" Style="{StaticResource CardTitle}" Margin="0,0,0,12" />
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Ellipse Width="5" Height="5" Margin="0,6,10,0" VerticalAlignment="Top"
+                                         Fill="{DynamicResource SfAccentBrush}" />
+                                <TextBlock Grid.Column="1" Style="{StaticResource Caption}"
+                                           Text="Recentre after moving your chair or headphones." />
+                            </Grid>
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Ellipse Width="5" Height="5" Margin="0,6,10,0" VerticalAlignment="Top"
+                                         Fill="{DynamicResource SfAccentBrush}" />
+                                <TextBlock Grid.Column="1" Style="{StaticResource Caption}"
+                                           Text="Raise motion prediction if sound lags behind your head; lower it if it overshoots." />
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Ellipse Width="5" Height="5" Margin="0,6,10,0" VerticalAlignment="Top"
+                                         Fill="{DynamicResource SfAccentBrush}" />
+                                <TextBlock Grid.Column="1" Style="{StaticResource Caption}"
+                                           Text="Room amount only affects the measured ear-response model." />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

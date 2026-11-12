@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>Soundstage.Engine</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- MIT KEMAR HRIRs (see NOTICE.md); the renderer falls back to the simple model without it. -->
+    <EmbeddedResource Include="Assets\mit_kemar_diffuse.hrir" LogicalName="Soundstage.Engine.Assets.mit_kemar_diffuse.hrir" Condition="Exists('Assets\mit_kemar_diffuse.hrir')" />
+  </ItemGroup>
+
+</Project>

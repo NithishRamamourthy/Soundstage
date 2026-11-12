@@ -1,0 +1,316 @@
+<UserControl x:Class="Soundstage.UI.Views.HeadphonesPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             Background="Transparent">
+    <ScrollViewer Background="Transparent" VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+        <Grid Margin="0,0,10,28">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Page header -->
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="HEADPHONES" Style="{StaticResource SfEyebrow}" />
+                <TextBlock Text="{Binding Model}" Style="{StaticResource SfH1}" Margin="0,4,0,0" />
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <TextBlock Text="{Binding Firmware}" Style="{StaticResource Caption}"
+                               Visibility="{Binding IsConnected, Converter={StaticResource BoolToVisibility}}" />
+                    <TextBlock Text="{Binding CodecText, StringFormat='  ·  {0}'}" Style="{StaticResource Caption}"
+                               Visibility="{Binding IsConnected, Converter={StaticResource BoolToVisibility}}" />
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Hero: device summary, battery, connect -->
+            <Border Grid.Row="1" Style="{StaticResource SfCard}" Margin="0,20,0,16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="STATUS" Style="{StaticResource SfEyebrow}" />
+                        <StackPanel Orientation="Horizontal" Margin="0,7,0,0">
+                            <Ellipse Width="9" Height="9" VerticalAlignment="Center" Margin="0,0,8,0">
+                                <Ellipse.Style>
+                                    <Style TargetType="Ellipse">
+                                        <Setter Property="Fill" Value="{DynamicResource SfTextTertiaryBrush}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                                <Setter Property="Fill" Value="{DynamicResource SfSuccessBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Ellipse.Style>
+                            </Ellipse>
+                            <TextBlock Text="{Binding StatusText}" FontSize="18" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource SfTextBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <TextBlock Text="{Binding Model}" Style="{StaticResource Caption}" Margin="0,5,0,0" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" MinWidth="220" Margin="24,0"
+                                Visibility="{Binding IsConnected, Converter={StaticResource BoolToVisibility}}">
+                        <TextBlock Text="BATTERY" Style="{StaticResource SfEyebrow}" />
+                        <TextBlock Text="{Binding BatteryText}" FontSize="34" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource SfTextBrush}" Margin="0,2,0,0" />
+                        <ProgressBar Style="{StaticResource SfProgress}" Minimum="0" Maximum="100"
+                                     Value="{Binding Battery, Mode=OneWay}" Margin="0,10,0,0" />
+                    </StackPanel>
+
+                    <Button Grid.Column="1" Content="Connect"
+                            Command="{Binding ConnectCommand}" MinWidth="150" Margin="24,0,0,0"
+                            HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource SfPrimaryButton}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsConnected}" Value="False">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Two columns; disabled until the headphones are connected -->
+            <Grid Grid.Row="2" IsEnabled="{Binding IsConnected}">
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Style.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.45" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="1.05*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+
+                    <!-- Ambient sound control -->
+                    <Border Style="{StaticResource SfCard}"
+                            Visibility="{Binding NoiseSupported, Converter={StaticResource BoolToVisibility}}">
+                        <StackPanel>
+                            <TextBlock Text="Ambient sound control" Style="{StaticResource CardTitle}" Margin="0,0,0,12" />
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                                <RadioButton Content="Noise cancelling" GroupName="Noise"
+                                             Style="{StaticResource SfSegmentedItem}"
+                                             IsChecked="{Binding NoiseCancelling}" Margin="0,0,8,0" />
+                                <RadioButton Content="Ambient" GroupName="Noise"
+                                             Style="{StaticResource SfSegmentedItem}"
+                                             IsChecked="{Binding Ambient}" Margin="0,0,8,0" />
+                                <RadioButton Content="Off" GroupName="Noise"
+                                             Style="{StaticResource SfSegmentedItem}"
+                                             IsChecked="{Binding NoiseOff}" />
+                            </StackPanel>
+
+                            <StackPanel IsEnabled="{Binding Ambient}">
+                                <StackPanel IsEnabled="{Binding AmbientLevelEnabled}" Margin="0,0,0,14">
+                                    <Grid>
+                                        <TextBlock Text="Ambient level" Style="{StaticResource RowLabel}" />
+                                        <TextBlock Text="{Binding AmbientLevelText}" Style="{StaticResource Caption}"
+                                                   HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Slider Style="{StaticResource SfSlider}" Minimum="1" Maximum="20"
+                                            SmallChange="1" LargeChange="2" Margin="0,2,0,0"
+                                            Value="{Binding AmbientLevel}"
+                                            AutomationProperties.Name="Ambient level" />
+                                </StackPanel>
+
+                                <Grid Margin="0,0,0,14"
+                                      Visibility="{Binding AutoAmbientSupported, Converter={StaticResource BoolToVisibility}}">
+                                    <StackPanel Margin="0,0,56,0">
+                                        <TextBlock Text="Auto ambient level" Style="{StaticResource RowLabel}" />
+                                        <TextBlock Text="Adjusts how much you hear to your surroundings."
+                                                   Style="{StaticResource Caption}" />
+                                    </StackPanel>
+                                    <ToggleButton Style="{StaticResource Switch}" IsChecked="{Binding AutoAmbient}"
+                                                  HorizontalAlignment="Right"
+                                                  AutomationProperties.Name="Auto ambient level" />
+                                </Grid>
+
+                                <Grid>
+                                    <StackPanel Margin="0,0,56,0">
+                                        <TextBlock Text="Focus on voice" Style="{StaticResource RowLabel}" />
+                                        <TextBlock Text="Lets voices through while reducing other noise."
+                                                   Style="{StaticResource Caption}" />
+                                    </StackPanel>
+                                    <ToggleButton Style="{StaticResource Switch}" IsChecked="{Binding FocusOnVoice}"
+                                                  HorizontalAlignment="Right"
+                                                  AutomationProperties.Name="Focus on voice" />
+                                </Grid>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Features -->
+                    <Border Style="{StaticResource SfCard}">
+                        <StackPanel>
+                            <TextBlock Text="Features" Style="{StaticResource CardTitle}" Margin="0,0,0,12" />
+
+                            <StackPanel Margin="0,0,0,12"
+                                        Visibility="{Binding SpeakToChatSupported, Converter={StaticResource BoolToVisibility}}">
+                                <Grid>
+                                    <StackPanel Margin="0,0,56,0">
+                                        <TextBlock Text="Speak-to-chat" Style="{StaticResource RowLabel}" />
+                                        <TextBlock Text="Pauses music and lets sound in when you start talking."
+                                                   Style="{StaticResource Caption}" />
+                                    </StackPanel>
+                                    <ToggleButton Style="{StaticResource Switch}" IsChecked="{Binding SpeakToChat}"
+                                                  HorizontalAlignment="Right"
+                                                  AutomationProperties.Name="Speak-to-chat" />
+                                </Grid>
+                                <Border Style="{StaticResource SfDivider}" Margin="0,12,0,0" />
+                            </StackPanel>
+
+                            <StackPanel Margin="0,0,0,12"
+                                        Visibility="{Binding DseeSupported, Converter={StaticResource BoolToVisibility}}">
+                                <Grid>
+                                    <StackPanel Margin="0,0,56,0">
+                                        <TextBlock Text="DSEE Extreme" Style="{StaticResource RowLabel}" />
+                                        <TextBlock Text="Restores detail lost in compressed music."
+                                                   Style="{StaticResource Caption}" />
+                                    </StackPanel>
+                                    <ToggleButton Style="{StaticResource Switch}" IsChecked="{Binding Dsee}"
+                                                  HorizontalAlignment="Right"
+                                                  AutomationProperties.Name="DSEE Extreme" />
+                                </Grid>
+                                <Border Style="{StaticResource SfDivider}" Margin="0,12,0,0" />
+                            </StackPanel>
+
+                            <StackPanel Margin="0,0,0,12"
+                                        Visibility="{Binding PauseSupported, Converter={StaticResource BoolToVisibility}}">
+                                <Grid>
+                                    <StackPanel Margin="0,0,56,0">
+                                        <TextBlock Text="Pause when taken off" Style="{StaticResource RowLabel}" />
+                                        <TextBlock Text="Stops playback when you remove the headphones."
+                                                   Style="{StaticResource Caption}" />
+                                    </StackPanel>
+                                    <ToggleButton Style="{StaticResource Switch}" IsChecked="{Binding PauseWhenRemoved}"
+                                                  HorizontalAlignment="Right"
+                                                  AutomationProperties.Name="Pause when taken off" />
+                                </Grid>
+                                <Border Style="{StaticResource SfDivider}" Margin="0,12,0,0" />
+                            </StackPanel>
+
+                            <ItemsControl ItemsSource="{Binding Switches}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,0,0,12">
+                                            <TextBlock Text="{Binding Name}" Style="{StaticResource RowLabel}"
+                                                       Margin="0,0,56,0" />
+                                            <ToggleButton Style="{StaticResource Switch}" IsChecked="{Binding On}"
+                                                          HorizontalAlignment="Right"
+                                                          AutomationProperties.Name="{Binding Name}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <StackPanel Margin="0,0,0,12"
+                                        Visibility="{Binding PrioritySupported, Converter={StaticResource BoolToVisibility}}">
+                                <Border Style="{StaticResource SfDivider}" Margin="0,0,0,12" />
+                                <TextBlock Text="Bluetooth connection priority" Style="{StaticResource Caption}"
+                                           Margin="0,0,0,4" />
+                                <ComboBox Style="{StaticResource SfComboBox}" ItemsSource="{Binding Priorities}"
+                                          SelectedItem="{Binding Priority}" HorizontalAlignment="Stretch"
+                                          AutomationProperties.Name="Bluetooth connection priority" />
+                            </StackPanel>
+
+                            <StackPanel Visibility="{Binding AutoPowerOffSupported, Converter={StaticResource BoolToVisibility}}">
+                                <Border Style="{StaticResource SfDivider}" Margin="0,0,0,12" />
+                                <TextBlock Text="Turn off automatically" Style="{StaticResource Caption}"
+                                           Margin="0,0,0,4" />
+                                <ComboBox Style="{StaticResource SfComboBox}" ItemsSource="{Binding AutoPowerOffChoices}"
+                                          SelectedItem="{Binding AutoPowerOff}" HorizontalAlignment="Stretch"
+                                          AutomationProperties.Name="Turn off automatically" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2">
+
+                    <!-- Equalizer -->
+                    <Border Style="{StaticResource SfCard}"
+                            Visibility="{Binding EqSupported, Converter={StaticResource BoolToVisibility}}">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,12">
+                                <TextBlock Text="Equalizer" Style="{StaticResource CardTitle}" VerticalAlignment="Center" />
+                                <ComboBox Style="{StaticResource SfComboBox}" ItemsSource="{Binding EqPresets}"
+                                          SelectedItem="{Binding EqPreset}" HorizontalAlignment="Right"
+                                          MinWidth="130" AutomationProperties.Name="Equalizer preset" />
+                            </Grid>
+                            <ItemsControl ItemsSource="{Binding Bands}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Rows="1" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel HorizontalAlignment="Center">
+                                            <Slider Style="{StaticResource SfVerticalSlider}" Orientation="Vertical"
+                                                    Height="170" Minimum="0" HorizontalAlignment="Center"
+                                                    Maximum="{Binding DataContext.EqMaximum, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                    Value="{Binding Value}" SmallChange="1" LargeChange="1"
+                                                    IsSnapToTickEnabled="True" TickFrequency="1"
+                                                    AutomationProperties.Name="{Binding Label}" />
+                                            <TextBlock Text="{Binding Label}" Style="{StaticResource Caption}"
+                                                       HorizontalAlignment="Center" Margin="0,6,0,0" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBlock Text="Moving a slider switches to Custom. Frequencies are in hertz."
+                                       Style="{StaticResource Caption}" Margin="0,10,0,0" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Headphone volume -->
+                    <Border Style="{StaticResource SfCard}"
+                            Visibility="{Binding VolumeSupported, Converter={StaticResource BoolToVisibility}}">
+                        <StackPanel>
+                            <Grid>
+                                <TextBlock Text="Headphone volume" Style="{StaticResource CardTitle}" />
+                                <TextBlock Text="{Binding VolumeText}" FontSize="20" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource SfTextBrush}"
+                                           HorizontalAlignment="Right" VerticalAlignment="Center" />
+                            </Grid>
+                            <Slider Style="{StaticResource SfSlider}" Minimum="0" Maximum="30"
+                                    SmallChange="1" LargeChange="3" Margin="0,8,0,0"
+                                    Value="{Binding Volume}" AutomationProperties.Name="Headphone volume" />
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Power -->
+                    <Border Style="{StaticResource SfCard}">
+                        <Grid>
+                            <StackPanel Margin="0,0,150,0">
+                                <TextBlock Text="Power" Style="{StaticResource CardTitle}" />
+                                <TextBlock Text="Turns the headphones off. Use their power button to turn them back on."
+                                           Style="{StaticResource Caption}" Margin="0,2,0,0" />
+                            </StackPanel>
+                            <Button Content="Turn off" Style="{StaticResource SfDangerButton}"
+                                    Command="{Binding PowerOffCommand}"
+                                    HorizontalAlignment="Right" VerticalAlignment="Center" />
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

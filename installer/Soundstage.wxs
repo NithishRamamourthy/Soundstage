@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+
+  <Package
+      Name="Soundstage"
+      Manufacturer="Soundstage"
+      Version="0.1.0.0"
+      UpgradeCode="7f2c8a51-3b64-4d0e-9c1a-5e8d2b7f4a10"
+      Scope="perUser"
+      Compressed="yes"
+      InstallerVersion="500">
+
+    <SummaryInformation
+        Description="Soundstage - head-tracked spatial audio for Sony headphones"
+        Manufacturer="Soundstage" />
+
+    <MajorUpgrade
+        DowngradeErrorMessage="A newer version of Soundstage is already installed." />
+
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <Icon Id="SoundstageIcon" SourceFile="src\Soundstage.App\soundstage.ico" />
+    <Property Id="ARPPRODUCTICON" Value="SoundstageIcon" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/" />
+    <Property Id="ARPNOMODIFY" Value="1" />
+
+    <!-- Optional desktop shortcut: msiexec /i Soundstage.msi DESKTOP_SHORTCUT=1 -->
+    <Property Id="DESKTOP_SHORTCUT" Value="0" />
+
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="ProgramsFolder" Name="Programs">
+        <Directory Id="INSTALLFOLDER" Name="Soundstage" />
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="AppMenuFolder" Name="Soundstage" />
+    </StandardDirectory>
+
+    <StandardDirectory Id="DesktopFolder" />
+
+    <Feature Id="Main" Title="Soundstage" Level="1">
+      <ComponentGroupRef Id="AppFiles" />
+      <ComponentRef Id="StartMenuShortcut" />
+      <ComponentRef Id="DesktopShortcut" />
+      <ComponentRef Id="UninstallEntry" />
+    </Feature>
+
+    <ComponentGroup Id="AppFiles" Directory="INSTALLFOLDER">
+      <Component Id="MainExecutable" Guid="*">
+        <File Id="SoundstageExe" Source="dist\app\Soundstage.exe" KeyPath="yes" />
+      </Component>
+    </ComponentGroup>
+
+    <Component Id="StartMenuShortcut" Directory="AppMenuFolder" Guid="*">
+      <Shortcut Id="StartMenuLink"
+                Name="Soundstage"
+                Description="Head-tracked spatial audio for Sony headphones"
+                Target="[INSTALLFOLDER]Soundstage.exe"
+                WorkingDirectory="INSTALLFOLDER"
+                Icon="SoundstageIcon" />
+      <RemoveFolder Id="RemoveAppMenuFolder" On="uninstall" />
+      <RegistryValue Root="HKCU" Key="Software\Soundstage" Name="StartMenu" Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+
+    <Component Id="DesktopShortcut" Directory="DesktopFolder" Guid="*" Condition="DESKTOP_SHORTCUT = 1">
+      <Shortcut Id="DesktopLink"
+                Name="Soundstage"
+                Description="Head-tracked spatial audio for Sony headphones"
+                Target="[INSTALLFOLDER]Soundstage.exe"
+                WorkingDirectory="INSTALLFOLDER"
+                Icon="SoundstageIcon" />
+      <RegistryValue Root="HKCU" Key="Software\Soundstage" Name="DesktopShortcut" Type="integer" Value="1" KeyPath="yes" />
+    </Component>
+
+    <Component Id="UninstallEntry" Directory="INSTALLFOLDER" Guid="*">
+      <RegistryValue Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\Soundstage"
+                     Name="DisplayName" Type="string" Value="Soundstage" KeyPath="yes" />
+      <RegistryValue Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\Soundstage"
+                     Name="DisplayVersion" Type="string" Value="0.1.0" />
+      <RegistryValue Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\Soundstage"
+                     Name="Publisher" Type="string" Value="Soundstage" />
+      <RegistryValue Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\Soundstage"
+                     Name="DisplayIcon" Type="string" Value="[INSTALLFOLDER]Soundstage.exe" />
+      <RegistryValue Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\Soundstage"
+                     Name="InstallLocation" Type="string" Value="[INSTALLFOLDER]" />
+      <RegistryValue Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\Soundstage"
+                     Name="NoModify" Type="integer" Value="1" />
+      <RegistryValue Root="HKCU" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\Soundstage"
+                     Name="NoRepair" Type="integer" Value="1" />
+    </Component>
+
+
+
+  </Package>
+</Wix>
