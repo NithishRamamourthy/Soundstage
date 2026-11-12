@@ -14,7 +14,7 @@ speakers fixed in the room as you turn your head.
 
 ## Install
 
-**[Download `Soundstage-Setup.msi`](https://github.com/USER/Soundstage/releases/latest)** and double-click it.
+**[Download `Soundstage-Setup.msi`](https://github.com/NithishRamamourthy/Soundstage/releases/latest)** and double-click it.
 
 - No .NET runtime needed; the app is self-contained.
 - Installs per user into `%LocalAppData%\Programs\Soundstage`, so it needs no

@@ -21,7 +21,7 @@
 
     <Icon Id="SoundstageIcon" SourceFile="src\Soundstage.App\soundstage.ico" />
     <Property Id="ARPPRODUCTICON" Value="SoundstageIcon" />
-    <Property Id="ARPHELPLINK" Value="https://github.com/" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/NithishRamamourthy/Soundstage" />
     <Property Id="ARPNOMODIFY" Value="1" />
 
     <!-- Optional desktop shortcut: msiexec /i Soundstage.msi DESKTOP_SHORTCUT=1 -->
