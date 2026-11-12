@@ -30,7 +30,9 @@ public sealed class AppSettings
     public bool AutoCenter { get; set; } = true;
     public double PredictionMs { get; set; } = 100;
     public bool MeasuredModel { get; set; } = true;
-    public double RoomPercent { get; set; } = 35;
+    public double RoomPercent { get; set; } = 15;
+    /// <summary>Correct the spatial mix's tone and level to match plain playback.</summary>
+    public bool MatchDirect { get; set; } = true;
     /// <summary>Point Windows at the capture device while spatial audio is on, and back afterwards.</summary>
     public bool AutoSwitchOutput { get; set; } = true;
     public bool CloseToTray { get; set; } = true;
@@ -82,6 +84,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
         _measuredModel = _settings.MeasuredModel;
         _roomPercent = Math.Clamp(_settings.RoomPercent, 0, 100);
         _engine.Render.Room = (float)(_roomPercent / 100.0);
+        _matchDirect = _settings.MatchDirect;
+        _engine.Render.MatchDirect = _matchDirect;
         ApplyPoseSettings();
 
         RecenterCommand = new RelayCommand(() => _engine.Pose.Recenter(), () => IsRunning);
@@ -461,12 +465,31 @@ public sealed class MainViewModel : INotifyPropertyChanged
             _settings.MeasuredModel = value;
             _settings.Save();
             Notify(nameof(RoomAvailable));
+            Notify(nameof(MatchDirectAvailable));
             RestartIfRunning();
         }
     }
 
     /// <summary>The room is part of the measured-response renderer only.</summary>
     public bool RoomAvailable => _measuredModel;
+
+    bool _matchDirect;
+    /// <summary>Correct the spatial mix's tone and level to match plain playback.</summary>
+    public bool MatchDirect
+    {
+        get => _matchDirect;
+        set
+        {
+            if (!Set(ref _matchDirect, value)) return;
+            _engine.Render.MatchDirect = value;   // applies immediately
+            _settings.MatchDirect = value;
+            _settings.Save();
+            Notify(nameof(MatchDirectAvailable));
+        }
+    }
+
+    /// <summary>Only the measured-response renderer has something to correct.</summary>
+    public bool MatchDirectAvailable => _measuredModel;
 
     double _roomPercent;
     public double RoomPercent

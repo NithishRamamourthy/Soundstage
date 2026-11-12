@@ -143,6 +143,17 @@
                         <StackPanel>
                             <TextBlock Text="Sound" Style="{StaticResource CardTitle}" Margin="0,0,0,14" />
 
+                            <Grid Margin="0,0,0,16" IsEnabled="{Binding MatchDirectAvailable}">
+                                <StackPanel Margin="0,0,60,0">
+                                    <TextBlock Text="Match direct sound" Style="{StaticResource RowLabel}" />
+                                    <TextBlock Text="Corrects the tone and level of the spatial mix so it sounds like the headphones plugged in the usual way. The cues that place sound outside your head are left alone."
+                                               Style="{StaticResource Caption}" Margin="0,4,0,0" />
+                                </StackPanel>
+                                <ToggleButton Style="{StaticResource Switch}" IsChecked="{Binding MatchDirect}"
+                                              HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,0,0"
+                                              AutomationProperties.Name="Match direct sound" />
+                            </Grid>
+
                             <Grid Margin="0,0,0,16">
                                 <StackPanel Margin="0,0,60,0">
                                     <TextBlock Text="Measured ear responses" Style="{StaticResource RowLabel}" />

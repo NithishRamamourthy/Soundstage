@@ -787,6 +787,7 @@ namespace Soundstage.Engine
                 Console.WriteLine("== measured ear responses ==");
                 Suite();
                 FrontBack();
+                Timbre();
                 Speed();
             }
             else Console.WriteLine("(measured ear responses not built in; skipped)");
@@ -848,9 +849,79 @@ namespace Soundstage.Engine
             return energy;
         }
 
-        /// <summary>How much faster than real time a full 7.1 mix with the room renders.</summary>
-        static void Speed()
+        /// <summary>How close the spatial mix's tone and level are to plain playback.</summary>
+        static void Timbre()
         {
+            SpeakerLayout stereo = SpeakerLayout.FromMask(2, 0x3);
+            double[] off = StereoResponse(stereo, false);
+            double[] on = StereoResponse(stereo, true);
+            string[] names = { "63", "125", "250", "500", "1k", "2k", "4k", "8k", "12k" };
+            System.Text.StringBuilder a = new System.Text.StringBuilder(), b = new System.Text.StringBuilder();
+            double worst = 0, worstOn = 0;
+            for (int i = 0; i < off.Length; i++)
+            {
+                a.Append(string.Format(CultureInfo.InvariantCulture, " {0} {1:+0.0;-0.0}", names[i], off[i]));
+                b.Append(string.Format(CultureInfo.InvariantCulture, " {0} {1:+0.0;-0.0}", names[i], on[i]));
+                worst = Math.Max(worst, Math.Abs(off[i]));
+                worstOn = Math.Max(worstOn, Math.Abs(on[i]));
+            }
+            bool ok = worstOn < 2.5 && worstOn < worst * 0.5;
+            if (!ok) _failures++;
+            Console.WriteLine("timbre match off, dB vs direct:" + a);
+            Console.WriteLine("timbre match on,  dB vs direct:" + b +
+                string.Format(CultureInfo.InvariantCulture, "   worst {0:0.0} -> {1:0.0} dB  {2}", worst, worstOn, ok ? "ok" : "FAILED"));
+        }
+
+        /// <summary>White-noise response of the stereo path relative to the input, per octave band.</summary>
+        static double[] StereoResponse(SpeakerLayout layout, bool match)
+        {
+            const int sr = 48000, win = 8192, frames = 6;
+            RenderSettings settings = new RenderSettings { Room = 0 };
+            settings.MatchDirect = match;
+            HrtfBinaural dsp = new HrtfBinaural(sr, layout, new FixedHead(), settings);
+            Random rng = new Random(11);
+            float[] input = new float[win * layout.Count];
+            float[] output = new float[win * 2];
+            double[] centres = { 63, 125, 250, 500, 1000, 2000, 4000, 8000, 12000 };
+            double[] inPow = new double[centres.Length], outPow = new double[centres.Length];
+
+            for (int f = 0; f <= frames; f++)
+            {
+                for (int i = 0; i < input.Length; i++) input[i] = (float)(rng.NextDouble() * 2 - 1) * 0.25f;
+                dsp.Process(input, win, output);
+                if (f == 0) continue;   // let the filters settle
+
+                System.Numerics.Complex[] xi = new System.Numerics.Complex[win], xo = new System.Numerics.Complex[win];
+                for (int i = 0; i < win; i++)
+                {
+                    double w = 0.5 - 0.5 * Math.Cos(2 * Math.PI * i / (win - 1));
+                    double v = 0;
+                    for (int c = 0; c < layout.Count; c++) v += input[i * layout.Count + c];
+                    xi[i] = new System.Numerics.Complex(v * w, 0);
+                    xo[i] = new System.Numerics.Complex((output[i * 2] + output[i * 2 + 1]) * w, 0);
+                }
+                TimbreMatch.Fft(xi, false);
+                TimbreMatch.Fft(xo, false);
+                for (int band = 0; band < centres.Length; band++)
+                {
+                    double lo = centres[band] / Math.Sqrt(2), hi = centres[band] * Math.Sqrt(2);
+                    int k0 = Math.Max(1, (int)(lo * win / sr)), k1 = Math.Min(win / 2 - 1, (int)(hi * win / sr));
+                    for (int k = k0; k <= k1; k++)
+                    {
+                        inPow[band] += xi[k].Magnitude * xi[k].Magnitude;
+                        outPow[band] += xo[k].Magnitude * xo[k].Magnitude;
+                    }
+                }
+            }
+
+            double[] db = new double[centres.Length];
+            for (int i = 0; i < centres.Length; i++)
+                db[i] = 10 * Math.Log10(Math.Max(outPow[i], 1e-20) / Math.Max(inPow[i], 1e-20));
+            return db;
+        }
+
+        /// <summary>How much faster than real time a full 7.1 mix with the room renders.</summary>
+        static void Speed()        {
             const int sr = 48000, n = 48000;
             SpeakerLayout layout = SpeakerLayout.FromMask(8, 0x63F);
             HrtfBinaural dsp = new HrtfBinaural(sr, layout, new FixedHead(), new RenderSettings { Room = 1 });

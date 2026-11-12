@@ -39,6 +39,9 @@ and a virtual playback device for apps to play into (see below).
 **Spatial audio**
 
 - Live head tracking, driven by the headphone's own motion sensor.
+- **Match direct sound**: corrects the tone and level of the spatial mix to within
+  about 1 dB of plain playback, so switching spatial audio on does not change how
+  your music sounds — only where it comes from.
 - Stereo, 5.1 and 7.1 input, rendered binaurally with measured ear responses
   (MIT KEMAR dummy head).
 - Adjustable room simulation, motion prediction, recentre, per-speaker test

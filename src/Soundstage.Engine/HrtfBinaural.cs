@@ -15,12 +15,20 @@ namespace Soundstage.Engine
     /// <summary>Settings that can change while audio is running.</summary>
     public sealed class RenderSettings
     {
-        volatile float _room = 0.35f;
+        volatile float _room = 0.15f;
         /// <summary>Amount of room simulation, 0 (none) to 1.</summary>
         public float Room
         {
             get { return _room; }
             set { _room = value < 0 ? 0 : (value > 1 ? 1 : value); }
+        }
+
+        volatile bool _matchDirect = true;
+        /// <summary>Correct the spatial mix's tone and level to match plain playback.</summary>
+        public bool MatchDirect
+        {
+            get { return _matchDirect; }
+            set { _matchDirect = value; }
         }
     }
 
@@ -70,6 +78,9 @@ namespace Soundstage.Engine
         bool _primed;
         float _room;
         bool _roomWasOn;
+
+        readonly TimbreMatch _timbre;
+        bool _matchWasOn;
 
         // Diffuse tail: a 4-line feedback delay network.
         readonly float[][] _fdn = new float[4][];
@@ -136,6 +147,9 @@ namespace Soundstage.Engine
                 _fdnGain[i] = (float)Math.Pow(10.0, -3.0 * len / (Rt60 * sampleRate));
             }
             _preDelay = new float[(int)(0.020 * sampleRate)];
+
+            // Tone and level match to plain playback, built from the same HRIR set.
+            _timbre = TimbreMatch.Build(_set, layout, SpeakerGain, sampleRate);
         }
 
         Source NewSource(double az, double el, double extraDelay, bool reflection)
@@ -291,9 +305,22 @@ namespace Soundstage.Engine
                     l += tail * (y0 + y2);
                     r += tail * (y1 + y3);
                 }
+                _mixL[f] = l;
+                _mixR[f] = r;
+            }
+
+            // 4. Tone and level match, applied to both ears equally so the cues that
+            //    place the sound outside the head are untouched.
+            bool match = _settings.MatchDirect && _timbre.Taps.Length > 0;
+            if (match && !_matchWasOn) _timbre.Reset();
+            _matchWasOn = match;
+            if (match) _timbre.Process(_mixL, _mixR, n);
+
+            for (int f = 0; f < n; f++)
+            {
                 int o = (offset + f) * 2;
-                output[o] = Limit(l);
-                output[o + 1] = Limit(r);
+                output[o] = Limit(_mixL[f]);
+                output[o + 1] = Limit(_mixR[f]);
             }
             _pos = (_pos + n) & LineMask;
         }
