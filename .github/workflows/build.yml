@@ -1,9 +1,10 @@
 name: build
 
+# GitHub will not start a job until the account has billing set up, so this runs
+# only on demand. Add `push:` / `pull_request:` back under `on:` once billing is
+# in place and every push gets checked automatically.
 on:
-  push:
-    branches: [ main ]
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
